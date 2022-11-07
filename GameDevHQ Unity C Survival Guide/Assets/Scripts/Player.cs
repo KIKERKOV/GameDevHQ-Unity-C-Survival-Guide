@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,69 +6,80 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField]
-    private GameObject _playerPrefab;
-    private bool _isPlayerObjectSpawned = false;
-    public bool _isPlayerAlive = false;
-    public int _playerLives;
-    public float _playerSpeed = 10.0f;
-    public float _playerRotationSpeed = 100.0f;
+    private GameObject _PlayerPrefab;
+    private int _score;
+    [SerializeField]
+    private float _speed;
+    private int _speedState;
+
+    //create a program that let's you increment the speed when you git the s key
+    // a key decrements the speed 
+    // when the speed is great than 20 you need to print out "slow down"
+    // when the speed is 0 print out you need to speed up!
+    // you can't go below zero.
+
+
+
 
     // Start is called before the first frame update
     void Start()
     {
-       
+
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        SpawnPlayer();
-        //Movement();
+        Accelerate();
+        ScoreCounter();
+        CubeColor();
     }
 
-    private void SpawnPlayer()
-    {
-        
 
-        if (_isPlayerObjectSpawned == false)
+    void Accelerate()
+    {
+        if (Input.GetKey(KeyCode.UpArrow))
         {
-            
-            if (_isPlayerAlive == false && _playerLives <=1)
-            {
-                Vector3 spawnPosition = new Vector3(0f, 0f, 0f);
-                GameObject newPlayer = Instantiate(_playerPrefab, spawnPosition, Quaternion.identity);
-                newPlayer.AddComponent<Player>();
-                _isPlayerAlive = true;
-                _isPlayerObjectSpawned = true;
-                _playerLives = 100;
-                Debug.Log("Player Spawned");
-                if (_isPlayerAlive == false && _playerLives <= 0)
-                {
-                    Destroy(newPlayer);
-                }
-            }
+            _speed += 1;
         }
-        if (_playerLives <= 0 && _isPlayerAlive == false)
+        if (Input.GetKey(KeyCode.DownArrow))
         {
-            ReturnToCheckpoint();
+            _speed -= 1;
         }
-        
-
+        if (_speed < 0)
+        {
+            _speed = 0;
+        }
+        if (_speed > 20)
+        {
+            Debug.Log("SLOW DOWN!");
+        }
+        if (_speed == 0)
+        {
+            Debug.Log("SPEED UP");
+        }
     }
 
-    public void ReturnToCheckpoint()
+
+
+    void ScoreCounter()
     {
-
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            _score = _score + 10;
+        }
     }
 
-    public void Movement()
+    void CubeColor()
     {
-        float translation = Input.GetAxis("Vertical") * _playerSpeed;
-        float rotation = Input.GetAxis("Horizontal") * _playerRotationSpeed;
-        translation *= Time.deltaTime;
-        rotation *= Time.deltaTime;
-        
+        if (_score >= 50)
+        {
+            _PlayerPrefab.GetComponent<SpriteRenderer>().color = Color.red;
+        }
+        else if (_score <50)
+        {
+            _PlayerPrefab.GetComponent<SpriteRenderer>().color = Color.green;
+        }
     }
-
 
 }
